@@ -1,12 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>HTML for python flask</title>
-</head>
+{% extends 'base.html' %}
 
-<body>
-    <li><a href="{{ url_for('register') }}">회원가입</a>
-    <li><a href="{{ url_for('login') }}">로그인</a>
-</body>
-</html>
+{% block content %}
+
+<li><a href="{{ url_for('auth.register') }}">회원가입</a>
+<li><a href="{{ url_for('auth.login') }}">로그인</a>
+
+{% endblock %}
