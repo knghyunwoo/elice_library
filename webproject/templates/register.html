@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <form action = "/register" method="post">
+        <p>이름 : <input type="text" name = "name"></p>
+        <p>이메일(아이디) : <input type="text" name = "email"></p>
+        <p>비밀번호 : <input type="password" name = "password"></p>
+        <p>비밀번호 확인 : <input type="password" name = "password_check"></p>
+        <p>다 입력하고 생성버튼을 누르세요.<br> <input type = "submit" value = "생성"/> </p>
+    </form>
+    {% for message in get_flashed_messages() %}
+    <div class="flash">{{ message }}</div>
+    {% endfor %}
+
+{% endblock %}
