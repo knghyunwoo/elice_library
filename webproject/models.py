@@ -24,8 +24,8 @@ class Book(db.Model) :
 
 class Rental(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    book_id = db.Column(db.String(50), db.ForeignKey('book.name'), nullable=False)
-    user_id = db.Column(db.String(100), db.ForeignKey('user.useremail'), nullable=False)
+    book_id = db.Column(db.String(50), db.ForeignKey('book.id'), nullable=False) 
+    user_id = db.Column(db.String(100), db.ForeignKey('user.id'), nullable=False)
     book = db.relationship('Book')
     rent_date = db.Column(db.DateTime, nullable=False, default=datetime.today().date())
     return_date = db.Column(db.DateTime, nullable=True, default=None)
