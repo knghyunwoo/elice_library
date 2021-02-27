@@ -3,7 +3,7 @@ from flask import Flask, request, jsonify, session, render_template, redirect, u
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-from .models import db, User, Book, Rental
+from .models import db, User, Book, Rental, Comment
 import os
 
 app = Flask(__name__)
@@ -95,6 +95,8 @@ def login():
 #LOGOUT
 @app.route('/logout')
 def logout():
+    if session['isLogin'] != True:
+        return render_template('login.html')
     try:
         session.clear()
         return render_template('welcome.html')
@@ -104,6 +106,9 @@ def logout():
 #GETBOOK
 @app.route("/getbook")
 def getBook():
+    if session['isLogin'] != True:
+        return render_template('login.html')
+    
     books = Book.query.all()
     data = []
 
@@ -126,14 +131,11 @@ def getBook():
 
     return render_template('book.html', books=data)
 
-@app.route('/book_detail/<int:book_id>')
-def detail(book_id):
-    book = Book.query.filter_by(id=book_id).first()
-    return render_template('book_detail.html', book=book)
-
-
 @app.route("/rental", methods=('POST', 'GET'))
 def rentalBook():
+    if session['isLogin'] != True:
+        return render_template('login.html')
+        
     bookid = request.form.get("book_id")
     book = Book.query.filter(Book.id == bookid).first()
     userid = session['user_id']
@@ -154,16 +156,19 @@ def rentalBook():
 
 @app.route("/return", methods=('POST', 'GET'))
 def returnBook():
+    if session['isLogin'] != True:
+        return render_template('login.html')
+
     userid = session['user_id']
 
     if request.method == 'POST':
 
         rentalid = request.form.get('rentalid')
         rental = Rental.query.filter(Rental.id == rentalid).first()
-        rental.rent_date = datetime.today()
+        rental.return_date = datetime.today()
 
         book = Book.query.filter(Book.id == rental.book_id).first()
-        book.quantity += 1
+        book.stock += 1
         db.session.commit()
 
     rentals = Rental.query.filter(Rental.user_id == userid, Rental.return_date == None).all()
@@ -171,6 +176,24 @@ def returnBook():
     return render_template('return.html', rentals = rentals)
 
 
+@app.route('/log')
+def rentLog():
+
+    if session['isLogin'] != True:
+        return render_template('login.html')
+
+    userid = session['user_id']
+    rentals = Rental.query.filter(Rental.user_id == userid).all()
+
+    return render_template('rent_log.html', rentals = rentals)
+
+@app.route('/<int:book_id>')
+def getBookDetail(book_id):
+
+    book = Book.query.filter_by(id=book_id).first()
+    comments = Comment.query.filter(Comment.book_id == book_id).order_by(Comment.date.desc()).all()
+
+    return render_template('book_detail.html', book=book, comments=comments)
 
 if __name__ == "__main__":
     

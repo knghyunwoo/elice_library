@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% for rental in rentals %}
+{% with book=rental.book%}
+    <div class="card" style="width: 18rem">
+        <img  src="{{ book.image_path }}" class="card-img-top" alt="" uk-img >
+        <a href="{{ url_for('getBook', bookid=book.id) }}">{{ book.name }}</a>
+        <div> 평점 {{ book.rating }}</div>
+        <p><span >대출일</span> {{ rental.rent_date }}</p>
+        <p><span >반납일</span> {{ rental.return_date }}</p>
+    </div>
+{% endwith %}
+{% endfor%}
+
+{% endblock %}
