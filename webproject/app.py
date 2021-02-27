@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import Flask, request, jsonify, session, render_template, redirect, url_for, flash, Blueprint
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_migrate import Migrate
@@ -123,7 +124,7 @@ def getBook():
 
         data.append(temp)
 
-    return render_template('main.html', books=data)
+    return render_template('book.html', books=data)
 
 @app.route('/book_detail/<int:book_id>')
 def detail(book_id):
@@ -150,6 +151,24 @@ def rentalBook():
     flash(error)
 
     return redirect(url_for('getBook'))
+
+@app.route("/return", methods=('POST', 'GET'))
+def returnBook():
+    userid = session['user_id']
+
+    if request.method == 'POST':
+
+        rentalid = request.form.get('rentalid')
+        rental = Rental.query.filter(Rental.id == rentalid).first()
+        rental.rent_date = datetime.today()
+
+        book = Book.query.filter(Book.id == rental.book_id).first()
+        book.quantity += 1
+        db.session.commit()
+
+    rentals = Rental.query.filter(Rental.user_id == userid, Rental.return_date == None).all()
+
+    return render_template('return.html', rentals = rentals)
 
 
 

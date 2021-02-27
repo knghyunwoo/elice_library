@@ -29,6 +29,7 @@ class Rental(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     book_id = db.Column(db.String(50), db.ForeignKey('books.name', ondelete="CASCADE"), nullable=False)
     user_id = db.Column(db.String(100), db.ForeignKey('user.useremail', ondelete="CASCADE"), nullable=False)
+    book = db.relationship('Book')
     rent_date = db.Column(db.DateTime, nullable=False, default=datetime.today().date())
     return_date = db.Column(db.DateTime, nullable=True, default=None)
 
