@@ -14,7 +14,7 @@
             <h5>재고 : {{ book.stock }}</h5>
             <h5>평점 : {{ book.rating }}</h5>
             <h5>출판사 : {{ book.published_at }}</h5>
-            <a href="/book_detail/{{ book.id }}" class="btn btn-primary">자세히</a>
+            <a href="/{{ book.id }}" class="btn btn-primary">자세히</a>
             <form action="/rental" method="post">
                 <input hidden type="number" name="book_id" value="{{ book.id }}"/>
                 <input class="uk-button uk-button-secondary uk-width-1-1" type = "submit" value="대여하기"></form>

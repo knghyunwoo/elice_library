@@ -32,12 +32,12 @@ class Rental(db.Model):
 
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    bookid = db.Column(db.Integer, db.ForeignKey("book.id"))
-    userid = db.Column(db.Integer, db.ForeignKey("user.id"))
+    book_id = db.Column(db.Integer, db.ForeignKey("book.id"))
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     user = db.relationship('User')
     content = db.Column(db.TEXT)
     rating = db.Column(db.Integer)
-    create_date = db.Column(db.DateTime, default=datetime.today())
+    date = db.Column(db.DateTime, default=datetime.today().date())
 
 
 

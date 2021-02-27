@@ -3,7 +3,7 @@ from flask import Flask, request, jsonify, session, render_template, redirect, u
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-from .models import db, User, Book, Rental
+from .models import db, User, Book, Rental, Comment
 import os
 
 app = Flask(__name__)
@@ -131,15 +131,6 @@ def getBook():
 
     return render_template('book.html', books=data)
 
-@app.route('/book_detail/<int:book_id>')
-def detail(book_id):
-    if session['isLogin'] != True:
-        return render_template('login.html')
-
-    book = Book.query.filter_by(id=book_id).first()
-    return render_template('book_detail.html', book=book)
-
-
 @app.route("/rental", methods=('POST', 'GET'))
 def rentalBook():
     if session['isLogin'] != True:
@@ -188,12 +179,21 @@ def returnBook():
 @app.route('/log')
 def rentLog():
 
+    if session['isLogin'] != True:
+        return render_template('login.html')
+
     userid = session['user_id']
     rentals = Rental.query.filter(Rental.user_id == userid).all()
 
     return render_template('rent_log.html', rentals = rentals)
 
+@app.route('/<int:book_id>')
+def getBookDetail(book_id):
 
+    book = Book.query.filter_by(id=book_id).first()
+    comments = Comment.query.filter(Comment.book_id == book_id).order_by(Comment.date.desc()).all()
+
+    return render_template('book_detail.html', book=book, comments=comments)
 
 if __name__ == "__main__":
     
