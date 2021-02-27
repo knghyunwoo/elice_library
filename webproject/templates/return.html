@@ -5,28 +5,23 @@
 
 <div class="container">
     <div class="row row-cols-1 row-cols-md-3 g-4">
-    {% for rental in rentals %}
-    {% with book=rental.book %}        
+      {% for rental in rentals %}
+      {% with book=rental.book %}
       <div class="col">
         <div class="card" style="width: 18rem">
           <img src="{{ book.image_path }}" class="card-img-top" alt="..." />
-          <div class="card-body">
-            <h5 class="card-title">{{ book.name }}</h5>
-            <h5>대여일자 : {{ rental.stock }}</h5>
-            <a href="/book_detail/{{ book.id }}" class="btn btn-primary">자세히</a>
-            <form action="/return" method="post">
-                <input hidden type="number" name="rental_id" value="{{ rental.id }}"/>
-                <input class="uk-button uk-button-secondary uk-width-1-1" type = "submit" value="반납하기"></form>
-            </form>
-            {% for message in get_flashed_messages() %}
-            <div class="flash">{{ message }}</div>
-            {% endfor %}
-          </div>
+              <div class="card-body">
+                <h5 class="card-title">{{ book.name }}</h5>
+                <h5>대여날짜 : {{ rental.rent_date }}</h5>    
+                <form action="/return" method="post">
+                        <input hidden type="number" name="rentalid" value="{{ rental.id }}"/>
+                        <input class="uk-button uk-button-secondary uk-width-1-1" type = "submit" value="반납하기"></form>
+                </form>
+              </div>
         </div>
       </div>
-
-    {% endwith %}
-    {% endfor %}
+      {% endwith %}
+      {% endfor%}
     </div>
 </div>
 

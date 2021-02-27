@@ -95,6 +95,8 @@ def login():
 #LOGOUT
 @app.route('/logout')
 def logout():
+    if session['isLogin'] != True:
+        return render_template('login.html')
     try:
         session.clear()
         return render_template('welcome.html')
@@ -104,6 +106,9 @@ def logout():
 #GETBOOK
 @app.route("/getbook")
 def getBook():
+    if session['isLogin'] != True:
+        return render_template('login.html')
+    
     books = Book.query.all()
     data = []
 
@@ -128,12 +133,18 @@ def getBook():
 
 @app.route('/book_detail/<int:book_id>')
 def detail(book_id):
+    if session['isLogin'] != True:
+        return render_template('login.html')
+
     book = Book.query.filter_by(id=book_id).first()
     return render_template('book_detail.html', book=book)
 
 
 @app.route("/rental", methods=('POST', 'GET'))
 def rentalBook():
+    if session['isLogin'] != True:
+        return render_template('login.html')
+        
     bookid = request.form.get("book_id")
     book = Book.query.filter(Book.id == bookid).first()
     userid = session['user_id']
@@ -154,21 +165,33 @@ def rentalBook():
 
 @app.route("/return", methods=('POST', 'GET'))
 def returnBook():
+    if session['isLogin'] != True:
+        return render_template('login.html')
+
     userid = session['user_id']
 
     if request.method == 'POST':
 
         rentalid = request.form.get('rentalid')
         rental = Rental.query.filter(Rental.id == rentalid).first()
-        rental.rent_date = datetime.today()
+        rental.return_date = datetime.today()
 
         book = Book.query.filter(Book.id == rental.book_id).first()
-        book.quantity += 1
+        book.stock += 1
         db.session.commit()
 
     rentals = Rental.query.filter(Rental.user_id == userid, Rental.return_date == None).all()
 
     return render_template('return.html', rentals = rentals)
+
+
+@app.route('/log')
+def rentLog():
+
+    userid = session['user_id']
+    rentals = Rental.query.filter(Rental.user_id == userid).all()
+
+    return render_template('rent_log.html', rentals = rentals)
 
 
 
