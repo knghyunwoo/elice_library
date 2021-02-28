@@ -195,6 +195,34 @@ def getBookDetail(book_id):
 
     return render_template('book_detail.html', book=book, comments=comments)
 
+@app.route('/<int:book_id>/comment', methods=["POST"])
+def create_comment(book_id):
+
+    userid = session['user_id']
+
+    if request.method == "POST":
+
+        content = request.form['content']
+        rating = request.values.get('rating')
+        comment = Comment(user_id=userid, content=content, book_id=book_id, rating = rating)
+        db.session.add(comment)
+        db.session.commit()
+
+        ratings = Comment.query.filter(Comment.book_id == book_id, Comment.rating != None).all()
+
+        sum_rating = 0
+        for rating in ratings:
+            sum_rating += rating.rating
+
+        avg_rating = round(sum_rating/len(ratings), 1)
+        book = Book.query.get(book_id)
+        book.rating = avg_rating
+
+        db.session.commit()
+
+    return redirect(url_for('getBook',book_id=book_id))
+
+
 if __name__ == "__main__":
     
     app.run()
