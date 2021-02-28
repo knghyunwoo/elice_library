@@ -1,6 +1,11 @@
 {% extends "base.html" %} 
 {% block content %}
 
+<a href="{{ url_for('getBook') }}">도서목록</a></br>
+<a href="{{ url_for('returnBook') }}">반납하기</a></br>
+<a href= "{{ url_for('logout') }}">로그아웃</a></br>
+<a href= "{{ url_for('rentLog') }}">내 기록보기</a></br>
+
 <div class="container">
     <h5>제목 : {{ book.name }}</h5>
     <div class="card" style="width: 18rem">

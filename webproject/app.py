@@ -106,121 +106,138 @@ def logout():
 #GETBOOK
 @app.route("/getbook")
 def getBook():
-    if session['isLogin'] != True:
+    try:
+        if session['isLogin']:  
+            books = Book.query.all()
+            data = []
+
+            for book in books:
+
+                temp = {}
+                temp['id'] = book.id
+                temp['name'] = book.name
+                temp['publisher'] = book.publisher
+                temp['author'] = book.author
+                temp['published_at'] = book.published_at
+                temp['page_count'] = book.page_count
+                temp['isbn'] = book.isbn
+                temp['description'] = book.description
+                temp['image_path'] = book.image_path
+                temp['stock'] = book.stock
+                temp['rating'] = book.rating
+
+                data.append(temp)
+
+            return render_template('book.html', books=data)
+    except:
         return render_template('login.html')
-    
-    books = Book.query.all()
-    data = []
 
-    for book in books:
-
-        temp = {}
-        temp['id'] = book.id
-        temp['name'] = book.name
-        temp['publisher'] = book.publisher
-        temp['author'] = book.author
-        temp['published_at'] = book.published_at
-        temp['page_count'] = book.page_count
-        temp['isbn'] = book.isbn
-        temp['description'] = book.description
-        temp['image_path'] = book.image_path
-        temp['stock'] = book.stock
-        temp['rating'] = book.rating
-
-        data.append(temp)
-
-    return render_template('book.html', books=data)
 
 @app.route("/rental", methods=('POST', 'GET'))
 def rentalBook():
-    if session['isLogin'] != True:
+    try:
+        if session['isLogin']:    
+            bookid = request.form.get("book_id")
+            book = Book.query.filter(Book.id == bookid).first()
+            userid = session['user_id']
+
+            error = ""
+
+            if book.stock > 0:
+                new_rental = Rental(user_id=userid, book_id=bookid)
+                book.stock -= 1
+                db.session.add(new_rental)
+                db.session.commit()
+            else:
+                error = "현재 대여가 불가능합니다"
+
+            flash(error)
+
+            return redirect(url_for('getBook'))
+    
+    except:
         return render_template('login.html')
-        
-    bookid = request.form.get("book_id")
-    book = Book.query.filter(Book.id == bookid).first()
-    userid = session['user_id']
-
-    error = ""
-
-    if book.stock > 0:
-        new_rental = Rental(user_id=userid, book_id=bookid)
-        book.stock -= 1
-        db.session.add(new_rental)
-        db.session.commit()
-    else:
-        error = "현재 대여가 불가능합니다"
-
-    flash(error)
-
-    return redirect(url_for('getBook'))
 
 @app.route("/return", methods=('POST', 'GET'))
 def returnBook():
-    if session['isLogin'] != True:
+    try:
+        if session['isLogin']:
+            
+            userid = session['user_id']
+
+            if request.method == 'POST':
+
+                rentalid = request.form.get('rentalid')
+                rental = Rental.query.filter(Rental.id == rentalid).first()
+                rental.return_date = datetime.today()
+
+                book = Book.query.filter(Book.id == rental.book_id).first()
+                book.stock += 1
+                db.session.commit()
+
+            rentals = Rental.query.filter(Rental.user_id == userid, Rental.return_date == None).all()
+
+            return render_template('return.html', rentals = rentals)
+
+    except:
         return render_template('login.html')
 
-    userid = session['user_id']
-
-    if request.method == 'POST':
-
-        rentalid = request.form.get('rentalid')
-        rental = Rental.query.filter(Rental.id == rentalid).first()
-        rental.return_date = datetime.today()
-
-        book = Book.query.filter(Book.id == rental.book_id).first()
-        book.stock += 1
-        db.session.commit()
-
-    rentals = Rental.query.filter(Rental.user_id == userid, Rental.return_date == None).all()
-
-    return render_template('return.html', rentals = rentals)
-
+    
 
 @app.route('/log')
 def rentLog():
+    try:
+        if session['isLogin']:
+            userid = session['user_id']
+            rentals = Rental.query.filter(Rental.user_id == userid).all()
 
-    if session['isLogin'] != True:
+            return render_template('rent_log.html', rentals = rentals)
+
+    except:
         return render_template('login.html')
 
-    userid = session['user_id']
-    rentals = Rental.query.filter(Rental.user_id == userid).all()
-
-    return render_template('rent_log.html', rentals = rentals)
 
 @app.route('/<int:book_id>')
 def getBookDetail(book_id):
+    try:
+        if session['isLogin']:
+            book = Book.query.filter_by(id=book_id).first()
+            comments = Comment.query.filter(Comment.book_id == book_id).order_by(Comment.date.desc()).all()
 
-    book = Book.query.filter_by(id=book_id).first()
-    comments = Comment.query.filter(Comment.book_id == book_id).order_by(Comment.date.desc()).all()
-
-    return render_template('book_detail.html', book=book, comments=comments)
+            return render_template('book_detail.html', book=book, comments=comments)
+    
+    except:
+        return render_template('login.html')
 
 @app.route('/<int:book_id>/comment', methods=["POST"])
 def create_comment(book_id):
+    try:
+        if session['isLogin']:
+            userid = session['user_id']
 
-    userid = session['user_id']
+            if request.method == "POST":
 
-    if request.method == "POST":
+                content = request.form['content']
+                rating = request.values.get('rating')
+                comment = Comment(user_id=userid, content=content, book_id=book_id, rating = rating)
+                db.session.add(comment)
+                db.session.commit()
+                
+                ratings = Comment.query.filter(Comment.book_id == book_id, Comment.rating != None).all()
 
-        content = request.form['content']
-        rating = request.values.get('rating')
-        comment = Comment(user_id=userid, content=content, book_id=book_id, rating = rating)
-        db.session.add(comment)
-        db.session.commit()
+                sum_rating = 0
+                for rating in ratings:
+                    sum_rating += rating.rating
 
-        ratings = Comment.query.filter(Comment.book_id == book_id, Comment.rating != None).all()
+                avg_rating = round(sum_rating/len(ratings), 1)
+                book = Book.query.get(book_id)
+                book.rating = avg_rating
 
-        sum_rating = 0
-        for rating in ratings:
-            sum_rating += rating.rating
+                db.session.commit()
 
-        avg_rating = round(sum_rating/len(ratings), 1)
-        book = Book.query.get(book_id)
-        book.rating = avg_rating
-
-        db.session.commit()
-
-    return redirect(url_for('getBook',book_id=book_id))
+            return redirect(url_for('getBook',book_id=book_id))
+    except:
+        return render_template('login.html')
 
 
 if __name__ == "__main__":
