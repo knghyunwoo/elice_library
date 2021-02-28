@@ -3,6 +3,11 @@
 
 {% block content %}
 
+<a href="{{ url_for('returnBook') }}">반납하기</a></br>
+<a href= "{{ url_for('logout') }}">로그아웃</a></br>
+<a href= "{{ url_for('rentLog') }}">내 기록보기</a></br>
+
+
 <div class="container">
     <div class="row row-cols-1 row-cols-md-3 g-4">
       {% for book in books %}
