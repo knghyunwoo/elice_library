@@ -12,7 +12,7 @@
           <div class="card-body">
             <h5 class="card-title">{{ book.name }}</h5>
             <h5>재고 : {{ book.stock }}</h5>
-            <h5>평점 : {{ book.rating }}</h5>
+            <h5>별점 : {{ book.rating }}</h5>
             <h5>출판사 : {{ book.published_at }}</h5>
             <a href="/{{ book.id }}" class="btn btn-primary">자세히</a>
             <form action="/rental" method="post">
