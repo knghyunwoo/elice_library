@@ -5,6 +5,7 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from .models import db, User, Book, Rental, Comment
 import os
+from .forms import RegistrationForm, LoginForm
 
 app = Flask(__name__)
 migrate = Migrate(app, db)
@@ -32,41 +33,30 @@ def welcome():
 # /register 주소에서 GET과 POST 메소드 방식의 요청을 모두 받음
 @app.route('/register', methods=('GET', 'POST'))
 def register():
-    # POST 요청을 받았다면?
-    if request.method == 'POST':
-        # 아이디와 비밀번호를 폼에서 가져옵니다.
-        name = request.form.get('name')
-        username = request.form.get('email')
-        password = request.form.get('password')
-        password_check = request.form.get('password_check')
+    form = RegistrationForm()
+
+    if request.method == 'POST' and form.validate_on_submit():    
+        # name = request.form.get('name')
+        # username = request.form.get('email')
+        # password = request.form.get('password')
+        # password_check = request.form.get('password_check')
 
         error = None
-        # 이름이 없다면?
-        if not name:
-            error = '이름이 유효하지 않습니다.'
-        # 아이디가 없다면?
-        elif not username:
-            error = '아이디가 유효하지 않습니다.'
-        # 비밀번호가 없다면?
-        elif not password:
-            error = '비밀번호가 유효하지 않습니다.'
-        elif password != password_check:
-            error = "비밀번호가 비밀번호 확인과 같지 않습니다."
 
-        user = User.query.filter_by(username=username).first()
+        user = User.query.filter_by(id=form.email.data).first()
         if user:
             error = "이미 존재하는 회원입니다"
-
-        # 에러 메세지를 화면에 나타냅니다. (flashing)
-        flash(error)
-
-        if error is None:
-            insert_value = User(useremail=username, username=name, password=generate_password_hash(password))
-            db.session.add(insert_value)
+        else:
+            user = User(username=form.username.data,
+                        password=generate_password_hash(form.password.data),
+                        useremail=form.email.data)
+            db.session.add(user)
             db.session.commit()
             return redirect(url_for('login'))
+        
+        flash(error)
 
-    return render_template('register.html')
+    return render_template('register.html', form=form)
 
 
 # sLOGIN
