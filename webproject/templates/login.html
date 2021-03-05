@@ -2,11 +2,35 @@
 
 {% block content %}
 
-    <form action = "/login" method="post">
-        <p>email : <input type="text" name = "email"></p>
-        <p>password : <input type="password"  name = "password"></p>
-        <p>이름과 비밀번호를 입력하고 로그인버튼을 누르세요.<br><input type = "submit" value = "로그인"/> </p>
-    </form>
+<form method="post" class="post-form">
+  {{ form.csrf_token }}
+    <label for="email">사용자 이메일</label>
+    <input
+      type="email"
+      class="form-control"
+      name="email"
+      id="email"
+      value="{{ form.email.data or '' }}"
+    />
+    <label for="password">비밀번호</label>
+    <input
+      type="password"
+      class="form-control"
+      name="password"
+      id="password"
+      value="{{ form.password.data or '' }}"
+    />
+    <p>이메일과 비밀번호를 입력하고 로그인버튼을 누르세요.<br><input type = "submit" value = "로그인"/> </p>
+</form>
+
+    {% if field or form.errors.items() or get_flashed_messages() %}
+    <h1>오류입니다! 확인해주세요!!</h1>
+    {% endif %}
+    {% for field, errors in form.errors.items() %}
+    <div class="flash">
+    {{ form[field].label }}: {{ ', '.join(errors) }}
+    </div>
+    {% endfor %}
     {% for message in get_flashed_messages() %}
     <div class="flash">{{ message }}</div>
     {% endfor %}

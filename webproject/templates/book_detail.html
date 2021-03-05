@@ -16,8 +16,8 @@
     <h5>쪽수 : {{ book.page_count }}</h5>
     <h5>출간일 : {{ book.published_at }}</h5>
     <p>설명 : {{ book.description }}</p>
-    <h5>다른 사람들 댓글</h5>
         {% for comment in comments %}
+        <h5>다른 사람들 댓글</h5>
             <dt>{{ comment.user.name }}
                 {% if comment.rating %}
                 <span class="uk-label">{{ comment.rating }}점</span>
@@ -27,6 +27,7 @@
             </dd>
         {% endfor %}
 
+  <h5>댓글 쓰기</h5>
   <form action="{{ url_for('create_comment', book_id=book.id) }}", method="post">
     <textarea class="uk-textarea" name="content" rows="3"></textarea>
     <div class="uk-column-1-4">

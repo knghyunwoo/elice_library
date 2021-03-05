@@ -34,6 +34,7 @@ class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     book_id = db.Column(db.Integer, db.ForeignKey("book.id"))
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    book = db.relationship('Book')
     user = db.relationship('User')
     content = db.Column(db.TEXT)
     rating = db.Column(db.Integer)

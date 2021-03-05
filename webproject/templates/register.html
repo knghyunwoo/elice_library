@@ -49,7 +49,7 @@
 
       <br/><br/><br/>
       
-      {% if field or errors in form.errors.items() or message in get_flashed_messages() or%}
+      {% if field or form.errors.items() or get_flashed_messages() %}
       <h1>오류입니다! 확인해주세요!!</h1>
       {% endif %}
       {% for field, errors in form.errors.items() %}

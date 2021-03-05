@@ -23,23 +23,17 @@ db.init_app(app)
 migrate.init_app(app, db)
 
 
-# 완전 기본루트 환영루트
 @app.route('/')
 def welcome():
     return render_template('welcome.html')
 
 
 # SIGNUP
-# /register 주소에서 GET과 POST 메소드 방식의 요청을 모두 받음
 @app.route('/register', methods=('GET', 'POST'))
 def register():
     form = RegistrationForm()
 
     if request.method == 'POST' and form.validate_on_submit():    
-        # name = request.form.get('name')
-        # username = request.form.get('email')
-        # password = request.form.get('password')
-        # password_check = request.form.get('password_check')
 
         error = None
 
@@ -62,16 +56,18 @@ def register():
 # sLOGIN
 @app.route('/login', methods=('GET', 'POST'))
 def login():
-    if request.method == 'POST':
-        username = request.form.get('email')
-        password = request.form.get('password')
+    form = LoginForm()
+
+    if request.method == 'POST' and form.validate_on_submit():
+
         error = None
-        user = User.query.filter_by(username=username).first()
+
+        user = User.query.filter_by(useremail=form.email.data).first()
         if not user:
             error = "존재하지 않는 사용자입니다."
-        elif not check_password_hash(user.password, password):
+        elif not check_password_hash(user.password, form.password.data):
             error = "비밀번호가 올바르지 않습니다."
-
+        
         flash(error)
 
         if error is None:
@@ -79,19 +75,19 @@ def login():
             session['isLogin'] = True
             session['user_id'] = user.id
             return render_template('loggedin.html')
-
-    return render_template('login.html')
+    
+    return render_template('login.html', form=form)
 
 
 # LOGOUT
 @app.route('/logout')
 def logout():
     try:
-        if not session['isLogin']:
+        if session['isLogin']:
             session.clear()
             return render_template('welcome.html')
     except:
-        return render_template('login.html')
+        return redirect(url_for('login'))
 
 
 # GETBOOK
@@ -103,7 +99,7 @@ def getBook():
 
             return render_template('book.html', books=books)
     except:
-        return render_template('login.html')
+        return redirect(url_for('login'))
 
 
 @app.route("/rental", methods=('POST', 'GET'))
@@ -128,7 +124,7 @@ def rentalBook():
 
             return redirect(url_for('getBook'))
     except:
-        return render_template('login.html')
+        return redirect(url_for('login'))
 
 
 @app.route("/return", methods=('POST', 'GET'))
@@ -142,9 +138,7 @@ def returnBook():
                 rentalid = request.form.get('rentalid')
                 rental = Rental.query.filter(Rental.id == rentalid).first()
                 rental.return_date = datetime.today()
-
-                book = Book.query.filter(Book.id == rental.book_id).first()
-                book.stock += 1
+                rental.book.stock += 1
                 db.session.commit()
 
             rentals = Rental.query.filter(Rental.user_id == userid, Rental.return_date == None).all()
@@ -152,7 +146,7 @@ def returnBook():
             return render_template('return.html', rentals = rentals)
 
     except:
-        return render_template('login.html')
+        return redirect(url_for('login'))
 
 
 @app.route('/log')
@@ -165,7 +159,7 @@ def rentLog():
             return render_template('rent_log.html', rentals = rentals)
 
     except:
-        return render_template('login.html')
+        return redirect(url_for('login'))
 
 
 @app.route('/<int:book_id>')
@@ -177,7 +171,7 @@ def getBookDetail(book_id):
 
             return render_template('book_detail.html', book=book, comments=comments)
     except:
-        return render_template('login.html')
+        return redirect(url_for('login'))
 
 
 @app.route('/<int:book_id>/comment', methods=["POST"])
@@ -199,7 +193,7 @@ def create_comment(book_id):
                 for rating in ratings:
                     sum_rating += rating.rating
 
-                avg_rating = round(sum_rating/len(ratings), 1)
+                avg_rating = round(sum_rating/len(ratings))
                 book = Book.query.get(book_id)
                 book.rating = avg_rating
 
@@ -207,7 +201,7 @@ def create_comment(book_id):
 
             return redirect(url_for('getBook', book_id=book_id))
     except:
-        return render_template('login.html')
+        return redirect(url_for('login'))
 
 
 if __name__ == "__main__":
