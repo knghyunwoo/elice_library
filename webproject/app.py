@@ -93,13 +93,14 @@ def logout():
 # GETBOOK
 @app.route("/getbook")
 def getBook():
-    try:
-        if session['isLogin']:
-            books = Book.query.all()
+    # try:
+    if session['isLogin']:
+        page = request.args.get('page', type=int, default=1)
+        books = Book.query.paginate(page, per_page=8)
 
-            return render_template('book.html', books=books)
-    except:
-        return redirect(url_for('login'))
+        return render_template('book.html', books=books)
+    # except:
+    #     return redirect(url_for('login'))
 
 
 @app.route("/rental", methods=('POST', 'GET'))

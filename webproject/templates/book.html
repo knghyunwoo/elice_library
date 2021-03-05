@@ -9,8 +9,8 @@
 
 
 <div class="container">
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-      {% for book in books %}
+    <div class="row row-cols-1 row-cols-md-4 g-4">
+      {% for book in books.items %}
       <div class="col">
         <div class="card" style="width: 18rem">
           <img src="{{ book.image_path }}" class="card-img-top" alt="..." />
@@ -33,6 +33,29 @@
       {% endfor %}
     </div>
 </div>
+
+<div>
+  <ul>
+
+      {% if books.has_prev %}
+      <li><a href="#"></a></li>
+      {% endif %}
+
+      {% for page in books.iter_pages() %}
+          {% if page == books.page %}
+              <li><strong><a href="?page={{ page }}">{{ page }}</a></strong></li>
+          {% else %}
+              <li><a href="?page={{ page }}">{{ page }}</a></li>
+          {% endif %}
+      {% endfor %}
+
+      {% if books.has_next %}
+          <li><a href="#"></a></li>
+      {% endif %}
+  </ul>
+</div>
+
+
 
 {% endblock %}
 
