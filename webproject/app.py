@@ -35,11 +35,10 @@ def register():
 
     if request.method == 'POST' and form.validate_on_submit():    
 
-        error = None
-
-        user = User.query.filter_by(id=form.email.data).first()
+        user = User.query.filter_by(useremail=form.email.data).first()
         if user:
-            error = "이미 존재하는 회원입니다"
+            flash("이미 존재하는 회원입니다")
+            
         else:
             user = User(username=form.username.data,
                         password=generate_password_hash(form.password.data),
@@ -47,8 +46,6 @@ def register():
             db.session.add(user)
             db.session.commit()
             return redirect(url_for('login'))
-        
-        flash(error)
 
     return render_template('register.html', form=form)
 
@@ -93,14 +90,13 @@ def logout():
 # GETBOOK
 @app.route("/getbook")
 def getBook():
-    # try:
-    if session['isLogin']:
-        page = request.args.get('page', type=int, default=1)
-        books = Book.query.paginate(page, per_page=8)
-
-        return render_template('book.html', books=books)
-    # except:
-    #     return redirect(url_for('login'))
+    try:
+        if session['isLogin']:
+            page = request.args.get('page', type=int, default=1)
+            books = Book.query.paginate(page, per_page=8)
+            return render_template('book.html', books=books)
+    except:
+        return redirect(url_for('login'))
 
 
 @app.route("/rental", methods=('POST', 'GET'))
