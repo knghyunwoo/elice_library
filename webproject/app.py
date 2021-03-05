@@ -33,12 +33,11 @@ def welcome():
 def register():
     form = RegistrationForm()
 
-    if request.method == 'POST' and form.validate_on_submit():    
+    if request.method == 'POST' and form.validate_on_submit():
 
         user = User.query.filter_by(useremail=form.email.data).first()
         if user:
             flash("이미 존재하는 회원입니다")
-            
         else:
             user = User(username=form.username.data,
                         password=generate_password_hash(form.password.data),
@@ -64,7 +63,6 @@ def login():
             error = "존재하지 않는 사용자입니다."
         elif not check_password_hash(user.password, form.password.data):
             error = "비밀번호가 올바르지 않습니다."
-        
         flash(error)
 
         if error is None:
@@ -72,7 +70,6 @@ def login():
             session['isLogin'] = True
             session['user_id'] = user.id
             return render_template('loggedin.html')
-    
     return render_template('login.html', form=form)
 
 
@@ -109,14 +106,17 @@ def rentalBook():
 
             error = ""
 
-            if book.stock > 0:
+            # 이미 대여한거는 여기에 추가하면 될듯?
+            rental_already = Rental.query.filter(Rental.user_id == userid, Rental.book_id == bookid, Rental.return_date == None).first()
+            if book.stock <= 0:
+                error = "현재 대여가 불가능합니다"
+            elif rental_already:
+                error = "이미 대여한 책입니다."
+            elif book.stock > 0:
                 new_rental = Rental(user_id=userid, book_id=bookid)
                 book.stock -= 1
                 db.session.add(new_rental)
                 db.session.commit()
-            else:
-                error = "현재 대여가 불가능합니다"
-
             flash(error)
 
             return redirect(url_for('getBook'))
@@ -140,7 +140,7 @@ def returnBook():
 
             rentals = Rental.query.filter(Rental.user_id == userid, Rental.return_date == None).all()
 
-            return render_template('return.html', rentals = rentals)
+            return render_template('return.html', rentals=rentals)
 
     except:
         return redirect(url_for('login'))
@@ -153,7 +153,7 @@ def rentLog():
             userid = session['user_id']
             rentals = Rental.query.filter(Rental.user_id == userid).all()
 
-            return render_template('rent_log.html', rentals = rentals)
+            return render_template('rent_log.html', rentals=rentals)
 
     except:
         return redirect(url_for('login'))
@@ -181,7 +181,7 @@ def create_comment(book_id):
 
                 content = request.form.get('content')
                 rating = request.values.get('rating')
-                comment = Comment(user_id=userid, content=content, book_id=book_id, rating = rating)
+                comment = Comment(user_id=userid, content=content, book_id=book_id, rating=rating)
                 db.session.add(comment)
                 db.session.commit()
                 ratings = Comment.query.filter(Comment.book_id == book_id, Comment.rating != None).all()

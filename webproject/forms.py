@@ -10,7 +10,6 @@ class RegistrationForm(FlaskForm):
     password = PasswordField('비밀번호', validators=[DataRequired(message='빈칸을 채워주세요'),
             Length(min=8, message='최소 8자리로 해주세요'), EqualTo('password_check', '비밀번호가 일치하지 않습니다'),
             regexp('^(?=.*[a-zA-Z])(?=.*[!@#$%^~*+=-])(?=.*[0-9]).{8,20}$', message = '특수문자와 숫자를 넣어주세요')])
-    #FIXME 비밀번호형태
     password_check = PasswordField('비밀번호 확인', validators=[DataRequired(message='빈칸을 채워주세요')])
     username = StringField('사용자 이름', validators=[DataRequired(message='빈칸을 채워주세요'),
                 Length(min=2, max=25, message='길이는 2-25자로 해주세요'),

@@ -7,6 +7,11 @@
 <a href= "{{ url_for('logout') }}">로그아웃</a></br>
 <a href= "{{ url_for('rentLog') }}">내 기록보기</a></br>
 
+</br></br></br>
+{% for message in get_flashed_messages() %}
+<h1><div class="flash">{{ message }}</div></h1>
+{% endfor %}
+
 
 <div class="container">
     <div class="row row-cols-1 row-cols-md-4 g-4">
@@ -24,9 +29,6 @@
                 <input hidden type="number" name="book_id" value="{{ book.id }}"/>
                 <input class="uk-button uk-button-secondary uk-width-1-1" type = "submit" value="대여하기"></form>
             </form>
-            {% for message in get_flashed_messages() %}
-            <div class="flash">{{ message }}</div>
-            {% endfor %}
           </div>
         </div>
       </div>
@@ -36,7 +38,6 @@
 
 <div>
   <ul>
-
       {% if books.has_prev %}
       <li><a href="#"></a></li>
       {% endif %}
@@ -55,10 +56,4 @@
   </ul>
 </div>
 
-
-
 {% endblock %}
-
-
-
-  
