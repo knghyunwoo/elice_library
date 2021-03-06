@@ -2,12 +2,17 @@
 
 {% block content %}
 
-    <form action = "" method="post">
-    <a href="{{ url_for('getBook') }}">도서목록</a></br>
-    <a href="{{ url_for('returnBook') }}">반납하기</a></br>
-    <a href= "{{ url_for('logout') }}">로그아웃</a></br>
-    <a href= "{{ url_for('rentLog') }}">내 기록보기</a></br>
-    <a href="{{ url_for('superLoggedin') }}">관리자모드</a></br>
-    </form>
+<div class="container">
+    <div class="jumbotron">
+        <form action = "" method="post">
+            <p><a class="btn btn-primary btn-lg" role="button" href="{{ url_for('getBook') }}">도서목록</a></p>
+            <p><a class="btn btn-primary btn-lg" role="button" href="{{ url_for('returnBook') }}">반납하기</a></p>
+            <p><a class="btn btn-primary btn-lg" role="button" href="{{ url_for('rentLog') }}">내 기록보기</a></p>
+            <p><a class="btn btn-primary btn-lg" role="button" href="{{ url_for('logout') }}">로그아웃</a></p>
+        </form>
+    </div>
+</div>
+
+
         
 {% endblock %}
