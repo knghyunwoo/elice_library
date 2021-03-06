@@ -2,6 +2,7 @@ import csv
 from datetime import date, datetime
 
 from models import db, Book
+# from app import app; app.app_context().push(); import load_data
 
 session = db.session
 

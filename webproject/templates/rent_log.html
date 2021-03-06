@@ -11,6 +11,7 @@
         {% for rental in rentals %}
         {% with book=rental.book%}
             <div class="card" style="width: 18rem">
+                <p><span >빌린사람</span> {{ rental.user.username }}</p>
                 <img  src="{{ book.image_path }}" class="card-img-top" alt="" uk-img >
                 <a href="{{ url_for('getBookDetail', book_id=book.id) }}">{{ book.name }}</a>
                 <div> 평점 {{ book.rating }}</div>

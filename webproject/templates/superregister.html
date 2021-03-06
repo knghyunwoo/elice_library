@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <form method="post" class="post-form">
+        {{ form.csrf_token }}
+          <label for="email">이메일</label>
+          {{ form.email }}
+          </br></br>
+          <label for="password">비밀번호</label>
+          {{ form.password }}
+          </br></br>
+          <label for="password_check">비밀번호 확인</label>
+          {{ form.password_check }}
+          </br></br>
+          <label for="username">사용자 이름</label>
+          {{ form.username }}
+          </br></br>
+          <label for="super">관리자 비밀번호</label>
+          {{ form.super }}
+        <br/>
+        <button type="submit" >
+          생성하기
+        </button>
+      </form>
+
+      <br/><br/><br/>
+      
+      {% if field or form.errors.items() or get_flashed_messages() %}
+      <h1>오류입니다! 확인해주세요!!</h1>
+      {% endif %}
+      {% for field, errors in form.errors.items() %}
+      <div class="flash">
+      {{ form[field].label }}: {{ ', '.join(errors) }}
+      </div>
+      {% endfor %}
+      {% for message in get_flashed_messages() %}
+      <div class="flash">{{ message }}</div>
+      {% endfor %}
+ 
+
+{% endblock %}

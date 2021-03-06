@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <form action = "" method="post">
+    <a href="{{ url_for('getBook') }}">도서 재고관리하기</a></br>
+    <a href="{{ url_for('returnBook') }}">반납하기</a></br>
+    <a href= "{{ url_for('logout') }}">로그아웃</a></br>
+    <a href= "{{ url_for('superLoggedin') }}">모든 기록보기</a></br>
+    </form>
+        
+{% endblock %}

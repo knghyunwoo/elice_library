@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<a href="{{ url_for('getBook') }}">재고관리하기</a></br>
+<a href= "{{ url_for('logout') }}">로그아웃</a></br>
+<a href= "{{ url_for('superLog') }}">모든 사람기록보기</a></br>
+
+</br></br></br>
+{% for message in get_flashed_messages() %}
+<h1><div class="flash">{{ message }}</div></h1>
+{% endfor %}
+
+
+<div class="container">
+    <div class="row row-cols-1 row-cols-md-4 g-4">
+      {% for book in books.items %}
+      <div class="col">
+        <div class="card" style="width: 18rem">
+          <img src="{{ book.image_path }}" class="card-img-top" alt="..." />
+          <div class="card-body">
+            <h5 class="card-title">{{ book.name }}</h5>
+            <h5>재고 : {{ book.stock }}</h5>
+            <h5>별점 : {{ book.rating }}</h5>
+            <h5>출판사 : {{ book.published_at }}</h5>
+            <a href="/{{ book.id }}" class="btn btn-primary">자세히</a>
+            <form action="/plusstock" method="post">
+                <input hidden type="number" name="book_id" value="{{ book.id }}"/>
+                <input class="uk-button uk-button-secondary uk-width-1-1" type = "submit" value="재고 추가하기"></form>
+            </form>
+            <form action="/minusstock" method="post">
+              <input hidden type="number" name="book_id" value="{{ book.id }}"/>
+              <input class="uk-button uk-button-secondary uk-width-1-1" type = "submit" value="재고 감소하기"></form>
+          </form>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+</div>
+
+<div>
+  <ul>
+      {% if books.has_prev %}
+      <li><a href="#"></a></li>
+      {% endif %}
+
+      {% for page in books.iter_pages() %}
+          {% if page == books.page %}
+              <li><strong><a href="?page={{ page }}">{{ page }}</a></strong></li>
+          {% else %}
+              <li><a href="?page={{ page }}">{{ page }}</a></li>
+          {% endif %}
+      {% endfor %}
+
+      {% if books.has_next %}
+          <li><a href="#"></a></li>
+      {% endif %}
+  </ul>
+</div>
+
+{% endblock %}

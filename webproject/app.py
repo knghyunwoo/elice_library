@@ -5,7 +5,9 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from .models import db, User, Book, Rental, Comment
 import os
-from .forms import RegistrationForm, LoginForm
+from .forms import RegistrationForm, LoginForm, SuperRegistrationForm
+
+# export FLASK_ENV=development; export FLASK_APP=webproject.app
 
 app = Flask(__name__)
 migrate = Migrate(app, db)
@@ -41,15 +43,37 @@ def register():
         else:
             user = User(username=form.username.data,
                         password=generate_password_hash(form.password.data),
-                        useremail=form.email.data)
+                        useremail=form.email.data, super=0)
             db.session.add(user)
             db.session.commit()
             return redirect(url_for('login'))
 
     return render_template('register.html', form=form)
 
+# SUPERSIGNUP
+@app.route('/superregister', methods=('GET', 'POST'))
+def superregister():
+    form = SuperRegistrationForm()
 
-# sLOGIN
+    if request.method == 'POST' and form.validate_on_submit():
+
+        user = User.query.filter_by(useremail=form.email.data).first()
+        if user:
+            flash("이미 존재하는 회원입니다")
+        else:
+            if form.super.data == "1234":
+                user = User(username=form.username.data,
+                            password=generate_password_hash(form.password.data),
+                            useremail=form.email.data, super=1)
+                db.session.add(user)
+                db.session.commit()
+                return redirect(url_for('login'))
+            else:
+                flash("관리자 비밀번호가 틀렸습니다")
+
+    return render_template('superregister.html', form=form)
+
+# LOGIN
 @app.route('/login', methods=('GET', 'POST'))
 def login():
     form = LoginForm()
@@ -73,6 +97,18 @@ def login():
     return render_template('login.html', form=form)
 
 
+@app.route('/superLoggedin')
+def superLoggedin():
+    try:
+        if session['isLogin']:
+            userid = session['user_id']
+            curuser = User.query.filter(User.id == userid).first()
+            if curuser.super:
+                return render_template('superloggedin.html')
+    except:
+        return redirect(url_for('login'))
+
+
 # LOGOUT
 @app.route('/logout')
 def logout():
@@ -87,11 +123,48 @@ def logout():
 # GETBOOK
 @app.route("/getbook")
 def getBook():
-    try:
+    try:        
         if session['isLogin']:
+            userid = session['user_id']
+            page = request.args.get('page', type=int, default=1)
+            curuser = User.query.filter(User.id == userid).first()
+            if curuser.super:
+                books = Book.query.paginate(page, per_page=8)
+                return render_template('super_book.html', books=books)
             page = request.args.get('page', type=int, default=1)
             books = Book.query.paginate(page, per_page=8)
             return render_template('book.html', books=books)
+    except:
+        return redirect(url_for('login'))
+
+@app.route("/plusstock", methods=('POST', 'GET'))
+def plusBook():
+    try:
+        if session['isLogin']:
+            userid = session['user_id']
+            curuser = User.query.filter(User.id == userid).first()
+            if curuser.super:
+                bookid = request.form.get("book_id")
+                book = Book.query.filter(Book.id == bookid).first()
+                book.stock += 1
+                db.session.commit()
+            return redirect(url_for('getBook'))
+    except:
+        return redirect(url_for('login'))
+
+
+@app.route("/minusstock", methods=('POST', 'GET'))
+def minusBook():
+    try:
+        if session['isLogin']:
+            userid = session['user_id']
+            curuser = User.query.filter(User.id == userid).first()
+            if curuser.super:
+                bookid = request.form.get("book_id")
+                book = Book.query.filter(Book.id == bookid).first()
+                book.stock -= 1
+                db.session.commit()
+            return redirect(url_for('getBook'))
     except:
         return redirect(url_for('login'))
 
@@ -105,8 +178,7 @@ def rentalBook():
             userid = session['user_id']
 
             error = ""
-
-            # 이미 대여한거는 여기에 추가하면 될듯?
+            
             rental_already = Rental.query.filter(Rental.user_id == userid, Rental.book_id == bookid, Rental.return_date == None).first()
             if book.stock <= 0:
                 error = "현재 대여가 불가능합니다"
@@ -152,9 +224,20 @@ def rentLog():
         if session['isLogin']:
             userid = session['user_id']
             rentals = Rental.query.filter(Rental.user_id == userid).all()
-
             return render_template('rent_log.html', rentals=rentals)
 
+    except:
+        return redirect(url_for('login'))
+
+@app.route('/superlog')
+def superLog():
+    try:
+        if session['isLogin']:
+            userid = session['user_id']
+            curuser = User.query.filter(User.id == userid).first()
+            if curuser.super:
+                rentals = Rental.query.filter().all()
+                return render_template('rent_log.html', rentals=rentals)
     except:
         return redirect(url_for('login'))
 

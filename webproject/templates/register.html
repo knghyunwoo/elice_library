@@ -4,43 +4,18 @@
 
     <form method="post" class="post-form">
         {{ form.csrf_token }}
-        
           <label for="email">이메일</label>
-          <input
-            type="text"
-            class="form-control"
-            name="email"
-            id="email"
-            value="{{ form.email.data or '' }}"
-          />
-        
+          {{ form.email }}
+          </br></br>
           <label for="password1">비밀번호</label>
-          <input
-            type="password"
-            class="form-control"
-            name="password"
-            id="password"
-            value="{{ form.password.data or '' }}"
-          />
-        
+          {{ form.password }}
+          </br></br>
           <label for="password2">비밀번호 확인</label>
-          <input
-            type="password"
-            class="form-control"
-            name="password_check"
-            id="password_check"
-            value="{{ form.password_check.data or '' }}"
-          />
-        
+          {{ form.password_check }}
+          </br></br>
           <label for="username">사용자 이름</label>
-          <input
-            type="text"
-            class="form-control"
-            name="username"
-            id="username"
-            value="{{ form.username.data or '' }}"
-          />
-        
+          {{ form.username }}
+          </br></br>
         <br/>
         <button type="submit" >
           생성하기
