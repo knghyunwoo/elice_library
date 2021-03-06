@@ -105,6 +105,8 @@ def superLoggedin():
             curuser = User.query.filter(User.id == userid).first()
             if curuser.super:
                 return render_template('superloggedin.html')
+            else:
+                return render_template('loggedin.html')
     except:
         return redirect(url_for('login'))
 
