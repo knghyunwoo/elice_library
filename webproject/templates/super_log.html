@@ -14,7 +14,7 @@
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
-            <li><a href="{{ url_for('getBook') }}">도서재고 관리하기</a></li>
+            <li><a href="{{ url_for('get_book') }}">도서재고 관리하기</a></li>
             <li><a href="{{ url_for('logout') }}">로그아웃</a></li>
         </ul>
         </div>
@@ -33,7 +33,7 @@
             <div class="card-body">
                 <p><span >빌린사람</span> {{ rental.user.username }}</p>
                 <img  src="{{ book.image_path }}" class="card-img-top" alt="" uk-img >
-                <a href="{{ url_for('getBookDetail', book_id=book.id) }}">{{ book.name }}</a>
+                <a href="{{ url_for('get_book_detail', book_id=book.id) }}">{{ book.name }}</a>
                 <p><span >대출일</span> {{ rental.rent_date }}</p>
                 <p><span >반납일</span> {{ rental.return_date }}</p>
             </div>

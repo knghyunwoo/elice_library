@@ -15,8 +15,8 @@
       </div>
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-          <li><a href="{{ url_for('getBook') }}">도서목록</a></li>
-          <li><a href="{{ url_for('rentLog') }}">내 기록보기</a></li>
+          <li><a href="{{ url_for('get_book') }}">도서목록</a></li>
+          <li><a href="{{ url_for('show_rental_log') }}">내 기록보기</a></li>
           <li><a href="{{ url_for('logout') }}">로그아웃</a></li>
       </ul>
       </div>
@@ -34,10 +34,10 @@
         <div class="card" style="width: 18rem">
           <img src="{{ book.image_path }}" class="card-img-top" alt="..." />
               <div class="card-body">
-                <a href="{{ url_for('getBookDetail', book_id=book.id) }}">{{ book.name }}</a>
+                <a href="{{ url_for('get_book_detail', book_id=book.id) }}">{{ book.name }}</a>
                 <h5>대여날짜 : {{ rental.rent_date }}</h5>    
                 <form action="/return" method="post">
-                        <input hidden type="number" name="rentalid" value="{{ rental.id }}"/>
+                        <input hidden type="number" name="rental_id" value="{{ rental.id }}"/>
                         <input class="uk-button uk-button-secondary uk-width-1-1" type = "submit" value="반납하기"></form>
                 </form>
               </div>

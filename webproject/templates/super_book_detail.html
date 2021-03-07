@@ -18,10 +18,9 @@
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
-            <li><a href="{{ url_for('get_book') }}">도서목록</a></li>
-            <li><a href="{{ url_for('return_book') }}">반납하기</a></li>
-            <li><a href= "{{ url_for('logout') }}">로그아웃</a></li>
-            <li><a href= "{{ url_for('show_rental_log') }}">내 기록보기</a></li>
+            <li><a href="{{ url_for('get_book') }}">도서재고 관리하기</a></li>
+            <li><a href="{{ url_for('show_super_log') }}">모든사용자 기록보기</a></li>
+            <li><a href="{{ url_for('logout') }}">로그아웃</a></li>
         </ul>
         </div>
     </div>
@@ -47,10 +46,8 @@
                 <h5>쪽수 : {{ book.page_count }}</h5>
                 <h5>출간일 : {{ book.published_at }}</h5>
                 <p>설명 : {{ book.description }}</p>
-                {% if comments %}
-                <h3>다른 사람들 댓글</h3>
-                {% endif %}
                 {% for comment in comments %}
+                <h5>다른 사람들 댓글</h5>
                     <dt>{{ comment.user.name }}
                         {% if comment.rating %}
                         <span class="uk-label">{{ comment.rating }}점</span>

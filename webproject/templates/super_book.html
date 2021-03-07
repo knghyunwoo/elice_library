@@ -15,7 +15,7 @@
       </div>
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-          <li><a href="{{ url_for('superLog') }}">모든사용자 기록보기</a></li>
+          <li><a href="{{ url_for('show_super_log') }}">모든사용자 기록보기</a></li>
           <li><a href="{{ url_for('logout') }}">로그아웃</a></li>
       </ul>
       </div>
@@ -37,16 +37,16 @@
         <div class="card" style="width: 18rem">
           <img src="{{ book.image_path }}" class="card-img-top" alt="..." />
           <div class="card-body">
-            <a href="{{ url_for('getBookDetail', book_id=book.id) }}">{{ book.name }}</a>
+            <a href="{{ url_for('get_book_detail', book_id=book.id) }}">{{ book.name }}</a>
             <h5>재고 : {{ book.stock }}</h5>
             <h5>별점 : {{ book.rating }}</h5>
             <h5>출판사 : {{ book.published_at }}</h5>
             <a href="/{{ book.id }}" class="btn btn-primary">자세히</a>
-            <form action="/plusstock" method="post">
+            <form action="/increase_book" method="post">
               <input hidden type="number" name="book_id" value="{{ book.id }}"/>
               <input class="uk-button uk-button-secondary uk-width-1-1" type = "submit" value="재고 추가하기"></form>
             </form>
-            <form action="/minusstock" method="post">
+            <form action="/decrease_book" method="post">
               <input hidden type="number" name="book_id" value="{{ book.id }}"/>
               <input class="uk-button uk-button-secondary uk-width-1-1" type = "submit" value="재고 감소하기"></form>
             </form>
