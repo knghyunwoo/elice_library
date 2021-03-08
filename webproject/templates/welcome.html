@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container">
+    <div class="jumbotron">
+        <h1 class="text-center">도서관에 오신걸 환영해요~~</h1>
+        <h3 class="text-center">로그인부터 해주세요~~</h3>
+        <p class="text-center"><a class="btn btn-primary btn-lg" role="button" href="{{ url_for('register') }}">회원가입</a></p>
+        <p class="text-center"><a class="btn btn-primary btn-lg" role="button" href="{{ url_for('login') }}">로그인</a></p>
+    </div>
+</div>
+
+
+<button type="button" class="btn btn-outline-primary"><a href="{{ url_for('super_register') }}">관리자 회원가입</a></button>
+
+{% endblock %}

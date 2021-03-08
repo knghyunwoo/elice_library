@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container">
+  <div class="jumbotron">
+    <form method="post" class="post-form">
+      {{ form.csrf_token }}
+      <label for="email">이메일</label> &nbsp;&nbsp;&nbsp;&nbsp;
+      {{ form.email }} </br></br>
+      <label for="email">비밀번호</label> &nbsp;&nbsp;&nbsp;&nbsp;
+      {{ form.password }}</br></br></br>
+      <p>이메일과 비밀번호를 입력하고 로그인버튼을 누르세요.</p>
+      <p><input type = "submit" value = "로그인"/></p>
+    </form>
+    </br></br></br>
+    <p><a class="btn btn-primary btn-lg" role="button" href="{{ url_for('register') }}">회원가입</a></p>
+    
+    </br></br></br>
+    {% if field or form.errors.items() or get_flashed_messages() %}
+    <h1>오류입니다! 확인해주세요!!</h1>
+    {% endif %}
+    {% for field, errors in form.errors.items() %}
+    <div class="flash"><h3>
+    {{ form[field].label }}: {{ ', '.join(errors) }}
+    </h3></div>
+    {% endfor %}
+    {% for message in get_flashed_messages() %}
+    <div class="flash"><h3>{{ message }}</h3></div>
+    {% endfor %}
+    
+  </div>
+</div>
+
+
+{% endblock %}
